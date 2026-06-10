@@ -21,7 +21,7 @@ Some features are still under development and may use prototype logic, simulated
 
 ## 🚀 Live Demo
 
-**Website:** [https:demo](https://carbon-clash.vercel.app/)
+**Website:** [Click Here!](https://carbon-clash.vercel.app/)
 
 ---
 
