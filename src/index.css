@@ -6,12 +6,24 @@
   --font-display: "Space Grotesk", sans-serif;
 
   --color-slate-950: #050A08;
-  --color-slate-900: rgba(24, 24, 27, 0.4);
-  --color-slate-850: rgba(255, 255, 255, 0.08);
-  --color-slate-800: rgba(255, 255, 255, 0.05);
+  --color-slate-900: #18181b;
+  --color-slate-850: #202023;
+  --color-slate-800: #27272a;
   
   --color-emerald-500: #10B981;
   --color-emerald-400: #a3e635; /* maps to lime-400 */
+  
+  /* Color Contrast & Custom Palette definitions for Web Accessibility (WCAG AA compliance) */
+  --color-slate-400: #cbd5e1;
+  --color-slate-450: #cbd5e1;
+  --color-slate-455: #cbd5e1;
+  --color-slate-500: #cbd5e1;
+  --color-slate-550: #cbd5e1;
+  --color-slate-600: #cbd5e1;
+  --color-slate-650: #cbd5e1;
+  --color-slate-705: #94a3b8;
+  --color-rose-450: #fca5a5;
+  --color-emerald-450: #86efac;
 }
 
 /* Base override to ensure Immersive UI styles persist fully */

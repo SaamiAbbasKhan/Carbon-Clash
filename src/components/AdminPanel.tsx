@@ -2,18 +2,13 @@ import { useState } from "react";
 import { 
   Sliders, 
   Plus, 
-  Sparkles, 
-  Flame, 
-  Zap, 
-  Activity, 
   Trash, 
-  TrendingUp, 
-  Globe, 
   AlertOctagon,
   Wrench,
   Edit2
 } from "lucide-react";
 import { DailyMission, UserStats } from "../types";
+import { sanitizeInput } from "../utils/CarbonCalculator";
 
 interface AdminPanelProps {
   stats: UserStats;
@@ -49,11 +44,12 @@ export default function AdminPanel({
   const [localTrajectoryScale, setLocalTrajectoryScale] = useState(stats.trajectoryScale || 1.0);
 
   const handleCreateQuest = () => {
-    if (!mName.trim()) {
+    const cleanedName = sanitizeInput(mName);
+    if (!cleanedName.trim()) {
       return;
     }
     onInjectCustomMission({
-      title: mName,
+      title: cleanedName,
       description: "Custom hackathon administrative simulation quest",
       category: mCategory,
       type: "custom_admin",
@@ -142,25 +138,25 @@ export default function AdminPanel({
           <h3 className="text-sm font-mono text-indigo-400 font-bold uppercase tracking-widest flex items-center gap-1.5 mb-1.5">
             <Plus className="w-5 h-5 text-indigo-400" /> Spawn Custom Daily Quest
           </h3>
-          <p className="text-xs text-slate-400 leading-normal">Forge a custom Daily task. Defining these items pushes them directly onto the user\'s live quest board with active XP and Coin payouts.</p>
+          <p className="text-xs text-slate-400 leading-normal">Forge a custom Daily task. Defining these items pushes them directly onto the user's live quest board with active XP and Coin payouts.</p>
         </div>
 
         <div className="space-y-3">
           <div>
-            <label className="block text-[9px] font-mono text-slate-550 uppercase font-black mb-1">QUEST TITLE / TASK</label>
+            <label htmlFor="sandbox-quest-title" className="block text-[9px] font-mono text-slate-555 uppercase font-black mb-1">QUEST TITLE / TASK</label>
             <input
               id="sandbox-quest-title"
               type="text"
               placeholder="e.g. Skip taking elevator (use stairs)"
               value={mName}
-              onChange={(e) => setMName(e.target.value)}
+              onChange={(e) => setMName(sanitizeInput(e.target.value))}
               className="w-full bg-slate-950 border border-slate-850 rounded-xl px-3 py-2.5 text-xs text-slate-200 outline-none"
             />
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-[9px] font-mono text-slate-550 uppercase font-black mb-1">XP PAYOUT REWARD</label>
+              <label htmlFor="sandbox-quest-xp" className="block text-[9px] font-mono text-slate-555 uppercase font-black mb-1">XP PAYOUT REWARD</label>
               <input
                 id="sandbox-quest-xp"
                 type="number"
@@ -170,7 +166,7 @@ export default function AdminPanel({
               />
             </div>
             <div>
-              <label className="block text-[9px] font-mono text-slate-550 uppercase font-black mb-1">COIN PAYOUT REWARD</label>
+              <label htmlFor="sandbox-quest-coins" className="block text-[9px] font-mono text-slate-555 uppercase font-black mb-1">COIN PAYOUT REWARD</label>
               <input
                 id="sandbox-quest-coins"
                 type="number"
@@ -224,7 +220,7 @@ export default function AdminPanel({
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {/* Custom App Name */}
           <div className="space-y-1.5">
-            <label className="block text-[9px] font-mono text-slate-550 uppercase font-black">
+            <label htmlFor="sandbox-app-name-input" className="block text-[9px] font-mono text-slate-555 uppercase font-black">
               Dynamic App Title
             </label>
             <div className="flex gap-2">
@@ -232,13 +228,13 @@ export default function AdminPanel({
                 id="sandbox-app-name-input"
                 type="text"
                 value={localAppName}
-                onChange={(e) => setLocalAppName(e.target.value)}
+                onChange={(e) => setLocalAppName(sanitizeInput(e.target.value))}
                 placeholder="e.g. Saami Clash"
                 className="w-full bg-slate-950 border border-slate-850 rounded-xl px-3 py-2 text-xs text-slate-200 outline-none"
               />
               <button
                 id="sandbox-apply-appname-btn"
-                onClick={() => onUpdateAppName(localAppName)}
+                onClick={() => onUpdateAppName(sanitizeInput(localAppName))}
                 className="px-3 bg-indigo-600 hover:bg-indigo-550 text-white rounded-xl text-xs font-bold active:scale-95 cursor-pointer flex items-center justify-center transition-colors"
                 title="Apply custom app title"
               >
@@ -250,7 +246,7 @@ export default function AdminPanel({
 
           {/* Custom Footer Copy */}
           <div className="space-y-1.5">
-            <label className="block text-[9px] font-mono text-slate-550 uppercase font-black">
+            <label htmlFor="sandbox-footer-input" className="block text-[9px] font-mono text-slate-555 uppercase font-black">
               Dynamic Footer Subline
             </label>
             <div className="flex gap-2">
@@ -258,13 +254,13 @@ export default function AdminPanel({
                 id="sandbox-footer-input"
                 type="text"
                 value={localFooterText}
-                onChange={(e) => setLocalFooterText(e.target.value)}
+                onChange={(e) => setLocalFooterText(sanitizeInput(e.target.value))}
                 placeholder="e.g. Engine Pro v5.1"
                 className="w-full bg-slate-950 border border-slate-850 rounded-xl px-3 py-2 text-xs text-slate-200 outline-none"
               />
               <button
                 id="sandbox-apply-footer-btn"
-                onClick={() => onUpdateFooterText(localFooterText)}
+                onClick={() => onUpdateFooterText(sanitizeInput(localFooterText))}
                 className="px-3 bg-indigo-600 hover:bg-indigo-550 text-white rounded-xl text-xs font-bold active:scale-95 cursor-pointer flex items-center justify-center transition-colors"
                 title="Apply custom footer text"
               >
@@ -277,7 +273,7 @@ export default function AdminPanel({
           {/* Trajectory Scale */}
           <div className="space-y-2">
             <div className="flex justify-between items-center text-[9px] font-mono font-black uppercase">
-              <span className="text-slate-550">Trajectory scale multiplier</span>
+              <span className="text-slate-555">Trajectory scale multiplier</span>
               <span className="text-emerald-400">{localTrajectoryScale.toFixed(1)}x</span>
             </div>
             <input
@@ -287,6 +283,7 @@ export default function AdminPanel({
               max="3.0"
               step="0.1"
               value={localTrajectoryScale}
+              aria-label="Trajectory scale multiplier"
               onChange={(e) => {
                 const val = parseFloat(e.target.value);
                 setLocalTrajectoryScale(val);

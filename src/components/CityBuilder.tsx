@@ -2,18 +2,12 @@ import { useState, useEffect, useRef, Dispatch, SetStateAction } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { 
   Lock, 
-  Leaf, 
-  Sun, 
-  Wind, 
   Plus, 
   Sparkles, 
   Coins, 
   Building2, 
   TrendingUp, 
-  Zap, 
   Compass, 
-  Factory,
-  Trash2,
   Trash
 } from "lucide-react";
 import { CityItem, UserStats } from "../types";
@@ -167,12 +161,25 @@ export default function CityBuilder({ stats, cityItems, cityStage, accumulatedCo
       for (let c = 0; c < 6; c++) {
         const item = cityItems.find(i => i.x === c && i.y === r);
         const isSelected = selectedCell?.x === c && selectedCell?.y === r;
+        const cellLabel = item 
+          ? `Coordinate X ${c} Y ${r}: Contains Level ${item.level} ${item.name}`
+          : `Coordinate X ${c} Y ${r}: Empty plot. Select to deploy green technology`;
         
         cells.push(
           <div
             key={`${c}-${r}`}
             onClick={() => handleSelectGrid(c, r)}
-            className={`aspect-square rounded-xl flex flex-col items-center justify-center relative cursor-pointer border transition-all hover:scale-105 duration-200 ${
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                handleSelectGrid(c, r);
+              }
+            }}
+            role="button"
+            tabIndex={0}
+            aria-label={cellLabel}
+            aria-pressed={isSelected}
+            className={`aspect-square rounded-xl flex flex-col items-center justify-center relative cursor-pointer border transition-all hover:scale-105 duration-200 focus:outline-none focus:ring-2 focus:ring-emerald-400 ${
               isSelected 
                 ? "border-emerald-400 bg-emerald-500/10 shadow-lg shadow-emerald-500/10 ring-2 ring-emerald-500/20" 
                 : item 
@@ -203,7 +210,7 @@ export default function CityBuilder({ stats, cityItems, cityStage, accumulatedCo
     switch (cityStage) {
       case 1: // Polluted
         return {
-          banner: "from-grey-500/20 to-slate-800/10 border-slate-700",
+          banner: "from-slate-500/20 to-slate-800/10 border-slate-700",
           sky: "bg-gradient-to-b from-slate-900 via-stone-950 to-slate-900",
           badge: "bg-stone-800 text-stone-300 border-stone-700",
           smog: true,

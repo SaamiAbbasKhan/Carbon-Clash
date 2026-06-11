@@ -4,16 +4,11 @@ import {
   Copy, 
   Download, 
   Check, 
-  Compass, 
   Flame, 
-  Sparkles, 
   Globe, 
-  Award, 
-  Smartphone, 
-  Instagram, 
-  Linkedin, 
-  Twitter 
+  Award 
 } from "lucide-react";
+import { sanitizeInput } from "../utils/CarbonCalculator";
 
 interface ShareCardProps {
   username: string;
@@ -109,12 +104,12 @@ export default function ShareCard({ username, level, streak, ecoPower }: ShareCa
               </div>
               <div className="border-r border-slate-850 h-6 my-auto"></div>
               <div>
-                <div className="text-[9px] text-slate-500">CLASH LVL</div>
+                <div className="text-[9px] text-slate-550">CLASH LVL</div>
                 <div className="text-white text-sm">{level}</div>
               </div>
               <div className="border-r border-slate-850 h-6 my-auto"></div>
               <div>
-                <div className="text-[9px] text-slate-500">STREAK DAY</div>
+                <div className="text-[9px] text-slate-550">STREAK DAY</div>
                 <div className="text-orange-500 text-sm flex items-center justify-center gap-0.5">
                   <Flame className="w-3.5 h-3.5 fill-orange-500 text-orange-500" /> {streak}d
                 </div>
@@ -142,7 +137,7 @@ export default function ShareCard({ username, level, streak, ecoPower }: ShareCa
             <h3 className="text-sm font-mono text-indigo-400 font-bold uppercase tracking-widest flex items-center gap-1.5 mb-1.5">
               <Share2 className="w-5 h-5 text-indigo-400" /> Design Share Poster
             </h3>
-            <p className="text-xs text-slate-450 leading-relaxed">Configure metallic gradient styles, choose a milestone tag, and overlay custom descriptions ready to share with your group.</p>
+            <p className="text-xs text-slate-455 leading-relaxed">Configure metallic gradient styles, choose a milestone tag, and overlay custom descriptions ready to share with your group.</p>
           </div>
 
           {downloadSuccess && (
@@ -194,13 +189,13 @@ export default function ShareCard({ username, level, streak, ecoPower }: ShareCa
 
           {/* Step 3: Custom overlay description */}
           <div>
-            <label className="block text-[10px] font-mono text-slate-500 uppercase font-black mb-2">3. OVERLAY DESCRIPTION (OPTIONAL)</label>
+            <label htmlFor="custom-share-input" className="block text-[10px] font-mono text-slate-500 uppercase font-black mb-2">3. OVERLAY DESCRIPTION (OPTIONAL)</label>
             <input
               id="custom-share-input"
               type="text"
               placeholder="e.g. Swapped my car drive today!"
               value={customSubtitle}
-              onChange={(e) => setCustomSubtitle(e.target.value)}
+              onChange={(e) => setCustomSubtitle(sanitizeInput(e.target.value))}
               className="w-full bg-slate-950 border border-slate-850 rounded-xl px-3 py-2 text-xs text-slate-200 outline-none"
             />
           </div>

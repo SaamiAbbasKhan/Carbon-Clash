@@ -3,15 +3,9 @@ import {
   Flame, 
   Zap, 
   Coins, 
-  Bike, 
-  Footprints, 
-  Bus, 
-  Lightbulb, 
   CheckCircle2, 
   Sparkles, 
-  ArrowRight, 
   Activity, 
-  Circle,
   Clock,
   Shuffle
 } from "lucide-react";
@@ -37,9 +31,7 @@ export default function Dashboard({
   onClaimBossReward
 }: DashboardProps) {
 
-  const [activeQuickTab, setActiveQuickTab] = useState<"all" | "transport" | "diet">("all");
   const [bossClaiming, setBossClaiming] = useState(false);
-  const [questClaiming, setQuestClaiming] = useState<Record<string, boolean>>({});
 
   const quickActions = [
     { name: "Pedaled 2km transit", icon: "🚲", xp: 30, coins: 10, co2: 0.8, category: "transportation", segment: "transport" },

@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import { SurveyAnswer, UserStats } from "../types";
 import Footer from "./Footer";
+import { calculateInitialScore, sanitizeInput } from "../utils/CarbonCalculator";
 
 interface OnboardingProps {
   onComplete: (stats: UserStats) => void;
@@ -72,7 +73,8 @@ export default function Onboarding({ onComplete, appName = "Carbon Clash", foote
   };
 
   const handleSocialSignup = (provider: string) => {
-    if (!userName.trim()) {
+    const cleaned = sanitizeInput(userName);
+    if (!cleaned.trim()) {
       setValidationError("⚠️ Please claim your Gamer Tag first to authenticate!");
       return;
     }
@@ -80,39 +82,13 @@ export default function Onboarding({ onComplete, appName = "Carbon Clash", foote
     setStep(5); // Go to survey
   };
 
-  const calculateInitialScore = (answers: SurveyAnswer): number => {
-    let base = 50;
-
-    // Transport
-    if (answers.transportation === "walking") base += 20;
-    else if (answers.transportation === "bike") base += 15;
-    else if (answers.transportation === "public") base += 10;
-    else base -= 10;
-
-    // Diet
-    if (answers.diet === "vegan") base += 15;
-    else if (answers.diet === "vegetarian") base += 10;
-    else base -= 5;
-
-    // Energy
-    if (answers.energy === "low") base += 10;
-    else if (answers.energy === "medium") base += 0;
-    else base -= 10;
-
-    // Shopping
-    if (answers.shopping === "minimal") base += 10;
-    else if (answers.shopping === "moderate") base += 0;
-    else base -= 10;
-
-    return Math.max(10, Math.min(100, base));
-  };
-
   const handleFinishSurvey = () => {
     const score = calculateInitialScore(survey);
     // Directly increase starting XP based on calculated Eco Power rating score! (gives a push to initial XP)
     const xpPush = score * 8;
+    const cleanedName = sanitizeInput(userName).trim();
     const initialStats: UserStats = {
-      name: userName.trim() || "Saami Abbas Khan",
+      name: cleanedName || "Saami Abbas Khan",
       level: 1,
       xp: 150 + xpPush,
       xpNeeded: 1000,
@@ -215,7 +191,7 @@ export default function Onboarding({ onComplete, appName = "Carbon Clash", foote
 
               <div className="space-y-4">
                 <div>
-                  <label className="block text-xs font-mono text-slate-550 uppercase mb-2">Claim Gamer Tag</label>
+                  <label htmlFor="gamer-tag-input" className="block text-xs font-mono text-slate-550 uppercase mb-2">Claim Gamer Tag</label>
                   <input
                     id="gamer-tag-input"
                     type="text"
@@ -223,8 +199,9 @@ export default function Onboarding({ onComplete, appName = "Carbon Clash", foote
                     placeholder="Enter Username (e.g. Saami)"
                     value={userName}
                     onChange={(e) => {
-                      setUserName(e.target.value);
-                      if (e.target.value.trim()) setValidationError("");
+                      const sanitized = sanitizeInput(e.target.value);
+                      setUserName(sanitized);
+                      if (sanitized.trim()) setValidationError("");
                     }}
                     className="w-full bg-slate-950 border border-slate-800 focus:border-emerald-500/40 focus:ring-1 focus:ring-emerald-500/40 rounded-xl px-4 py-3.5 text-slate-100 placeholder-slate-700 outline-none transition-all text-sm font-semibold"
                   />
@@ -248,7 +225,7 @@ export default function Onboarding({ onComplete, appName = "Carbon Clash", foote
                 <button
                   id="signup-github"
                   onClick={() => handleSocialSignup("github")}
-                  className="w-full bg-slate-950 hover:bg-slate-905 text-slate-200 border border-slate-800 rounded-xl py-3.5 px-4 text-sm font-semibold flex items-center justify-center gap-3 transition-colors active:scale-98 cursor-pointer"
+                  className="w-full bg-slate-950 hover:bg-slate-900 text-slate-200 border border-slate-800 rounded-xl py-3.5 px-4 text-sm font-semibold flex items-center justify-center gap-3 transition-colors active:scale-98 cursor-pointer"
                 >
                   <Github className="w-4 h-4 text-slate-300" />
                   <span>Connect GitHub Client</span>

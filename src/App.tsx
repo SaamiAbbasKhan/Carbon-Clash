@@ -1,20 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { 
-  Flame, 
-  Zap, 
-  Coins, 
-  Building2, 
-  Compass, 
-  Award, 
-  Activity, 
-  Sliders, 
-  Sparkles,
-  RefreshCw,
-  LogOut,
-  SlidersHorizontal,
-  Bot
-} from "lucide-react";
+import { Sparkles, RefreshCw } from "lucide-react";
 
 import { AppState, DailyMission, Achievement, CityItem, CarbonLogItem, UserStats } from "./types";
 import LandingPage from "./components/LandingPage";
@@ -29,6 +15,7 @@ import ShareCard from "./components/ShareCard";
 import RewardsShop from "./components/RewardsShop";
 import AdminPanel from "./components/AdminPanel";
 import Footer from "./components/Footer";
+import { processXpGain } from "./utils/CarbonCalculator";
 
 // Standard pre-configured state to start with, representing Saami Abbas Khan level 12!
 const DEFAULT_MISSIONS: DailyMission[] = [
@@ -239,23 +226,20 @@ export default function App() {
 
   // Universal Stats adder subroutines
   const addXpToState = (stateObj: AppState, amount: number): AppState => {
-    let xp = stateObj.stats.xp + amount;
-    let level = stateObj.stats.level;
-    let xpNeeded = stateObj.stats.xpNeeded;
-
-    while (xp >= xpNeeded) {
-      xp -= xpNeeded;
-      level += 1;
-      xpNeeded = Math.floor(xpNeeded * 1.3);
-    }
+    const updated = processXpGain(
+      stateObj.stats.xp,
+      stateObj.stats.level,
+      stateObj.stats.xpNeeded,
+      amount
+    );
 
     return {
       ...stateObj,
       stats: {
         ...stateObj.stats,
-        xp,
-        level,
-        xpNeeded
+        xp: updated.xp,
+        level: updated.level,
+        xpNeeded: updated.xpNeeded
       }
     };
   };
@@ -706,6 +690,7 @@ export default function App() {
           <button
             id="app-reset-profile"
             onClick={handleResetProfile}
+            aria-label="Reset profile progression"
             className="p-2 hover:bg-slate-850 text-slate-500 hover:text-slate-300 rounded-xl border border-slate-850/40 transition-all flex items-center gap-1.5 text-xs font-mono tracking-wider cursor-pointer"
             title="Reset profile progression"
           >

@@ -2,17 +2,13 @@ import { useState } from "react";
 import { 
   Bot, 
   Send, 
-  Compass, 
   Sparkles, 
-  TrendingDown, 
-  AlertCircle, 
-  User, 
-  Calendar, 
   ChevronRight,
   Flame,
   Zap
 } from "lucide-react";
 import { UserStats, SurveyAnswer, CarbonLogItem, DailyMission } from "../types";
+import { sanitizeInput } from "../utils/CarbonCalculator";
 
 interface AICoachProps {
   stats: UserStats;
@@ -54,12 +50,13 @@ export default function AICoach({ stats, survey, logs, onAddCustomMission }: AIC
   const [questInjectedNotice, setQuestInjectedNotice] = useState<string | null>(null);
 
   const handleShortcutClick = (promptText: string) => {
-    setInput(promptText);
-    sendMessage(promptText);
+    const sanitizedPrompt = sanitizeInput(promptText);
+    setInput(sanitizedPrompt);
+    sendMessage(sanitizedPrompt);
   };
 
   const sendMessage = async (customText?: string) => {
-    const textToSend = customText || input;
+    const textToSend = sanitizeInput(customText || input);
     if (!textToSend.trim() || loading) return;
 
     // Append User Message
@@ -117,7 +114,7 @@ export default function AICoach({ stats, survey, logs, onAddCustomMission }: AIC
 
   const handleInjectMission = (missionTitle: string, xp: number, coins: number) => {
     onAddCustomMission({
-      title: missionTitle,
+      title: sanitizeInput(missionTitle),
       description: "Forged by AI Coach Chip",
       category: "lifestyle",
       type: "custom_ai",
@@ -211,7 +208,7 @@ export default function AICoach({ stats, survey, logs, onAddCustomMission }: AIC
                 className={`w-full rounded-2xl p-4 text-xs leading-relaxed border ${
                   msg.sender === "chip"
                     ? "bg-slate-950/70 border-slate-850/60 text-slate-200"
-                    : "bg-emerald-500/10 border-emerald-550/20 text-emerald-300"
+                    : "bg-emerald-500/10 border-emerald-500/20 text-emerald-300"
                 }`}
               >
                 <div className="whitespace-pre-line font-medium">{cleanMessageText(msg.text)}</div>
@@ -260,13 +257,15 @@ export default function AICoach({ stats, survey, logs, onAddCustomMission }: AIC
             type="text"
             placeholder="Ask Chip anything or consult diet profile..."
             value={input}
-            onChange={(e) => setInput(e.target.value)}
+            aria-label="Ask Chip anything or consult diet profile"
+            onChange={(e) => setInput(sanitizeInput(e.target.value))}
             onKeyDown={(e) => e.key === "Enter" && sendMessage()}
             className="flex-1 bg-transparent border-none text-xs text-slate-200 outline-none px-3 py-2 font-mono"
           />
           <button
             id="chat-send-btn"
             onClick={() => sendMessage()}
+            aria-label="Send message"
             className="p-3 bg-emerald-500 hover:bg-emerald-400 text-slate-950 rounded-xl transition-all cursor-pointer flex items-center justify-center active:scale-95"
           >
             <Send className="w-4 h-4" />

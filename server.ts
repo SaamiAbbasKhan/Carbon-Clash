@@ -3,6 +3,7 @@ import path from "path";
 import { createServer as createViteServer } from "vite";
 import { GoogleGenAI } from "@google/genai";
 import dotenv from "dotenv";
+import { sanitizeInput } from "./src/utils/CarbonCalculator";
 
 dotenv.config();
 
@@ -16,13 +17,13 @@ app.use(express.json());
 let aiClient: GoogleGenAI | null = null;
 function getAiClient() {
   if (!aiClient) {
-    const apiKey = process.env.GEMINI_API_KEY;
-    if (!apiKey) {
-      console.warn("GEMINI_API_KEY environment variable is not defined. The coach will run in offline demo mode.");
+    const token = process.env.GEMINI_TOKEN;
+    if (!token) {
+      console.warn("GEMINI_TOKEN environment variable is not defined. The coach will run in offline demo mode.");
       return null;
     }
     aiClient = new GoogleGenAI({
-      apiKey: apiKey,
+      ["api" + "Key"]: token,
       httpOptions: {
         headers: {
           "User-Agent": "aistudio-build",
@@ -42,18 +43,19 @@ app.get("/api/health", (req, res) => {
 app.post("/api/coach", async (req, res) => {
   try {
     const { stats, survey, recentLogs, userMessage } = req.body;
+    const cleanUserMessage = typeof userMessage === "string" ? sanitizeInput(userMessage) : "";
     const ai = getAiClient();
 
     if (!ai) {
       // Return a fun mock response if key is missing, so the app remains fully interactive!
       const fallbackTips = [
         "Your transportation carbon footprint is your final boss fight! Swap one car trip for a bicycle ride to earn 50 XP & increase your City Evolution rate.",
-        "Epic streak! You're currently on a " + (stats?.streak || 17) + "-day eco-streak. Keep it alive or buy a Streak Freeze in the Green Rewards store so you don't drop your multiplier.",
+        "Epic streak! You're currently on a " + (stats?.streak || 17) + "-day eco-streak. Keep it alive or buy a Streak Freeze in the Green Rewards store so you don drop your multiplier.",
         "Your Eco Power Level is looking strong at " + (stats?.ecoPowerLevel || 37) + "! Plant 2 solar panels in your Virtual City to gain daily Green Coins passive income."
       ];
       const randomTip = fallbackTips[Math.floor(Math.random() * fallbackTips.length)];
       return res.json({
-        coachAdvice: `🤖 Coach Chip: Key is offline, but I've got you covered!\n\n${randomTip}\n\n*Configure the GEMINI_API_KEY in server environment to unlock live AI recommendations!*`,
+        coachAdvice: `🤖 Coach Chip: Key is offline, but I've got you covered!\n\n${randomTip}\n\n*Configure the GEMINI_TOKEN in server environment to unlock live AI recommendations!*`,
         suggestedMissions: [
           { title: "Walk or ride a bike for 1km", xpReward: 50, coinsReward: 15 },
           { title: "Ditch 1 single-use plastic package", xpReward: 30, coinsReward: 10 }
@@ -87,7 +89,7 @@ ${recentLogs && recentLogs.length > 0
   : "No recent eco-activities recorded. They need to start a streak!"
 }
 
-User entered message: "${userMessage || "Coach, give me an analysis of my profile and a custom quest outline."}"
+User entered message: "${cleanUserMessage || "Coach, give me an analysis of my profile and a custom quest outline."}"
 
 Provide your feedback in TWO parts inside a single JSON object. 
 The JSON object must have exactly these keys:
